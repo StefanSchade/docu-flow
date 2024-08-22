@@ -17,6 +17,7 @@ RUN apt-get update && \
     apt-get install -y \
     apt-transport-https \
     ca-certificates \
+    sudo \
     curl \
     wget \
     vim \
@@ -44,12 +45,6 @@ RUN apt-get update && \
 # Set the working directory for the project
 WORKDIR /workspace
 
-# Copy all scripts except .cmd files to /workspace/scripts
-COPY scripts/*.sh /workspace/scripts/
-
-# Set execute permissions on all .sh scripts
-RUN chmod +x /workspace/scripts/*.sh
-
 # Copy the requirements file
 COPY requirements*.txt /workspace
 
@@ -62,6 +57,9 @@ RUN python3 -m venv /workspace/venv && \
 
 # Create a non-root user 'developer'
 RUN groupadd -r developer && useradd -m -r -g developer developer
+
+# Allow the 'developer' user to use sudo without a password
+RUN echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # Ensure the 'developer' user owns the workspace
 RUN chown -R developer:developer /workspace

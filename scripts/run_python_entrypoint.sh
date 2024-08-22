@@ -4,4 +4,4 @@
 source /workspace/venv/bin/activate
 
 # Run the Python script
-python /workspace/src/entrypoint.py
+python /workspace/src/entrypoint.py "$@"

@@ -20,5 +20,13 @@ for %%I in (%~2) do set "DATA_DIR=%%~fI"
 REM Determine the project root directory based on the script's location
 set "PROJECT_ROOT=%~dp0.."
 
-REM Start the development container
-docker run -it --rm -v %DATA_DIR%:/workspace/data -v %PROJECT_ROOT%\src:/workspace/src -w /workspace %IMAGE_NAME%
+REM Start the development container with line breaks using caret (^)
+docker run -it --rm ^
+    -v %DATA_DIR%:/workspace/data ^
+    -v %PROJECT_ROOT%\src:/workspace/src ^
+    -v %PROJECT_ROOT%\tests:/workspace/tests ^
+    -v %PROJECT_ROOT%\scripts:/workspace/scripts ^
+    -w /workspace ^
+    %IMAGE_NAME% ^
+    /bin/bash ^
+    -c "bash /workspace/scripts/post_create.sh && /bin/bash"
