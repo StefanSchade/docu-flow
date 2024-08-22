@@ -13,33 +13,41 @@ ENV https_proxy=${https_proxy}
 ENV no_proxy=${no_proxy}
 
 # basic dependencies
-RUN apt-get update && \
-    apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    sudo \
-    curl \
-    wget \
-    vim \
-    gnupg2 \
-    software-properties-common \
-    build-essential \
-    bash \
-    jq \
-    git \
-    python3 \
-    python3-pip \
-    python3-venv \
-    enchant-2 \
-    aspell \
-    aspell-en \
-    aspell-de \
-    libenchant-2-2 \
-    libglib2.0-dev \
-    tesseract-ocr \    
-    libtesseract-dev \
-    asciidoctor && \
+RUN apt-get update \
+    && apt-get install -y \
+       apt-transport-https \
+       ca-certificates \
+       sudo \
+       curl \
+       wget \
+       vim \
+       gnupg2 \
+       software-properties-common \
+       build-essential \
+       bash \
+       jq \
+       git \
+       python3 \
+       python3-pip \
+       python3-venv \
+       enchant-2 \
+       aspell \
+       aspell-en \
+       aspell-de \
+       libenchant-2-2 \
+       libglib2.0-dev \
+       tesseract-ocr \    
+       libtesseract-dev \
+       asciidoctor && \
     apt-get clean && \
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
+    && add-apt-repository \
+       "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+       $(lsb_release -cs) \
+       stable" \
+    && apt-get update && apt-get install -y \
+       docker-ce-cli \
+    && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Set the working directory for the project

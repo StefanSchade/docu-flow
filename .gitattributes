@@ -1,0 +1,4 @@
+# .gitattributes
+
+# Ensure all text files use LF (Unix) line endings
+* text eol=lf
