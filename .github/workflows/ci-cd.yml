@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Adjust to your primary branch
+      - master  # Adjust to your primary branch
   pull_request:
     branches:
-      - main  # Optionally run on PRs to main
+      - master  # Optionally run on PRs to main
 
 jobs:
   build:
