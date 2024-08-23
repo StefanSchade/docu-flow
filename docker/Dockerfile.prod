@@ -21,14 +21,14 @@ RUN python3 -m venv /workspace/venv && \
     pip install --no-cache-dir -r /workspace/requirements.txt"
 
 # Stage 2: Production Image
-FROM ubuntu:slim
+FROM ubuntu:latest
 
 # Install runtime dependencies
 RUN apt-get update && \
     apt-get install -y \
     ca-certificates \
     libenchant-2-2 \
-    libglib2.0-dev \:w
+    libglib2.0-dev \
     tesseract-ocr \
     libtesseract-dev \
     && apt-get clean && \

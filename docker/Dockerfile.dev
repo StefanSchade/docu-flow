@@ -63,8 +63,10 @@ RUN python3 -m venv /workspace/venv && \
     pip install --no-cache-dir -r /workspace/requirements-dev.txt && \
     pip list"
 
-# Create a non-root user 'developer'
-RUN groupadd -r developer && useradd -m -r -g developer developer
+# add groups developer and docker and user developer
+RUN groupadd -r developer && groupadd -r docker && \
+    useradd -u 999 -r -g developer -G docker -m developer && \
+    usermod -aG sudo developer
 
 # Allow the 'developer' user to use sudo without a password
 RUN echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers

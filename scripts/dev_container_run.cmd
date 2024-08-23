@@ -26,10 +26,11 @@ docker run -it --rm ^
     -v %PROJECT_ROOT%\src:/workspace/src:ro ^
     -v %PROJECT_ROOT%\tests:/workspace/tests:ro ^
     -v %PROJECT_ROOT%\scripts:/workspace/scripts ^
+    -v %PROJECT_ROOT%\docker:/workspace/docker ^
     -v %PROJECT_ROOT%\target:/workspace/target ^
     -v %PROJECT_ROOT%\test_data:/workspace/test_data:ro ^
     -v /var/run/docker.sock:/var/run/docker.sock ^
     -w /workspace ^
     %IMAGE_NAME% ^
     /bin/bash ^
-    -c "bash /workspace/scripts/post_create.sh && /bin/bash"
+    -c "bash /workspace/scripts/post_create.sh && exec /bin/bash"
