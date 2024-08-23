@@ -23,9 +23,12 @@ set "PROJECT_ROOT=%~dp0.."
 REM Start the development container with line breaks using caret (^)
 docker run -it --rm ^
     -v %DATA_DIR%:/workspace/data ^
-    -v %PROJECT_ROOT%\src:/workspace/src ^
-    -v %PROJECT_ROOT%\tests:/workspace/tests ^
+    -v %PROJECT_ROOT%\src:/workspace/src:ro ^
+    -v %PROJECT_ROOT%\tests:/workspace/tests:ro ^
     -v %PROJECT_ROOT%\scripts:/workspace/scripts ^
+    -v %PROJECT_ROOT%\target:/workspace/target ^
+    -v %PROJECT_ROOT%\test_data:/workspace/test_data:ro ^
+    -v /var/run/docker.sock:/var/run/docker.sock ^
     -w /workspace ^
     %IMAGE_NAME% ^
     /bin/bash ^

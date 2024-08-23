@@ -1,0 +1,5 @@
+This directory is supposed to contain input for automatic
+integration testing. it is mounted read only since it should 
+not be altered. During test execution it can be copied to a 
+folder within the container that is discarded after completion 
+of the test run. 
