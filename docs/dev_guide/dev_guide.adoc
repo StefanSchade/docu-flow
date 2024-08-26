@@ -1,0 +1,74 @@
+= Developer Guide
+
+== Gettinig Started 
+
+=== prerequisites 
+
+* Windows host machine (otherwise look here <<_developing_on_non_windows_systems>>)
+* GIT installed
+* Docker installed (either Docker Desktop or WSL2)
+
+=== step by step
+
+. *clone the repo:* typicaly you would create a GitHub fork and clone this to your machine 
+. *start dev environment:* run the scripts to build and run the dev container (`./scripts/*.cmd')
+. *dev tasks:* use the  bash scripts (`./scripts/*.sh`) for the typical task
+  .. running the app
+  .. running the tests
+  .. perform linting
+  .. running the pipeline locally prior to commit
+
+=== developing on non Windows systems
+
+The Docker based setup abstracts away most aspects of the host system. The only real dependence on windows are the start scripts (`*.cmd` files in the folder `scripts/`). These scripts just provide a convenient way to build and run the docker images and should be easy to port to a diffrent environemnt.
+
+== development in a container
+
+I like developing in docker containers and here I want to present some of the benfits I see and describe my setup.
+
+=== motivation and advantages
+
+* *access to a linux system from a Windows desktop* + 
+Windows is a comon desktop setup due to a low price tag (esp. compared to MacOS systems) and the ubiquitous presence at the workplace. For development I would however prefer a Linux system - a Docker setup makes this possible. There are several reasons I prefer a Linux environment for development
+
+  ** in most cases Linux is a *better representation of the target environment* than Windows
+      *** web applications
+      *** anything deployed to the cloud will likely not only run on windows but in a container
+
+  ** personally, I am *more familar with Unix tools* than with Windows
+      *** scripting for me is easier in `bash` compared to `powershell` or `cmd`
+      *** I am more familar with Unix system tools than with windows
+
+  ** *access to libraries* and programming environments
+      *** better availiability of libraries (e.g. https://pyenchant.github.io/pyenchant/install.html[pyenchant])
+      *** in case one ventures into aspects of system programming (e.g. networking) a Unix host system is preferable
+      *** software builds can be exchanged since everything is consistently Linux / Docker
+
+* dependencies on the *host system abstracted away* +
+The main feature of container technology is to abstract away the host environment and provide a clear interface. The ease of deployment is not only an advantage in production.
+
+  ** a new machine can be easily setup for development by installing Docker, there is no need to setup dev dependencies like additional tools
+  ** a new developer can build and run the applciation within minutes
+  ** as each project is isolated in its own container there are no issues with conflicting libraries or tools
+  ** maintaining the developmet environment becomes easier
+
+* the isolated environment in a container makes development easier
+
+  ** the paths inside the container are known
+  ** all tools are present, their location and version is asured
+
+=== volume mounts
+
+the 
+
+=== design decisions
+
+==== Why is there 
+
+==== Why is the python virtual environment (`/venv/`) located in a docker volume?
+
+The 2 alternatives would have been to put it inside
+* the container file system
+* normal mount point
+
+The first option would imply that the `requirement.txt` and `requirement-dev.txt` files are copied to the container. This would contradict the idea t

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Activate the virtual environment
-source /workspace/venv/bin/activate
+source /venv/bin/activate
 
-# Run linter (e.g., flake8)
+# Run linter 
 flake8 /workspace/src /workspace/tests/

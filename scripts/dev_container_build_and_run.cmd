@@ -7,8 +7,9 @@ if "%~1"=="" (
     exit /b 1
 )
 
-REM Define the image name centrally
+REM Define image and volume names centrally
 set IMAGE_NAME=dev-docu-flow
+set VOLUME_NAME=docu-flow-venv
 
 REM Get the absolute path of the data directory
 for %%I in (%~1) do set "DATA_DIR=%%~fI"
@@ -17,8 +18,12 @@ REM Determine the project root directory based on the script's location
 set "PROJECT_ROOT=%~dp0.."
 
 REM Build the container
-call dev_container_build.cmd %IMAGE_NAME%
+call dev_container_build.cmd %IMAGE_NAME% %VOLUME_NAME%
 
-REM Run the container
-call dev_container_run.cmd %IMAGE_NAME% %DATA_DIR%
+REM initialize venv in container
+REM call dev_container_run.cmd %IMAGE_NAME% %VOLUME_NAME% %DATA_DIR% %INIT_CMD%
+REM call dev_container_run.cmd %IMAGE_NAME% %VOLUME_NAME% %DATA_DIR% "bash -c /workspace/scripts/setup_python_virt_env.sh"
 
+echo Starting interactive shell
+REM Run the container:
+call dev_container_run.cmd %IMAGE_NAME% %VOLUME_NAME% %DATA_DIR% "/bin/bash"  

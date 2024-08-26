@@ -21,8 +21,7 @@ run_command /workspace/scripts/run_tests.sh
 echo "Running linting..."
 run_command /workspace/scripts/run_lint.sh
 
-echo "Building production image..."
-run_command /workspace/scripts/build_production.sh
+# echo "Building production image..."
+# run_command /workspace/scripts/build_production.sh
 
 echo -e "${GREEN}All steps completed successfully!${NC}"
-

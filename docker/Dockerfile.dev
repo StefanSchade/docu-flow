@@ -50,21 +50,11 @@ RUN apt-get update \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Set the working directory for the project
+# create directory and set it as the working directory
 WORKDIR /workspace
 
-# Copy the requirements file
-COPY requirements*.txt /workspace
-
-# Create and activate a virtual environment and install dependencies
-RUN python3 -m venv /workspace/venv && \
-    /bin/bash -c "source /workspace/venv/bin/activate && \
-    pip install --no-cache-dir -r /workspace/requirements.txt && \
-    pip install --no-cache-dir -r /workspace/requirements-dev.txt && \
-    pip list"
-
-# add groups developer and docker and user developer
-RUN groupadd -r developer && groupadd -r docker && \
+# create user developer and groups developer and docker
+RUN groupadd -r -g 1010 developer && groupadd -r docker && \
     useradd -u 999 -r -g developer -G docker -m developer && \
     usermod -aG sudo developer
 
@@ -77,5 +67,9 @@ RUN chown -R developer:developer /workspace
 # Switch to the 'developer' user
 USER developer
 
-# Start process
-CMD ["/bin/bash"]
+# run post_create and pass aditional commands, also run possible additional arguments
+ENTRYPOINT [ "/bin/sh", "-c", "\
+echo \"entrypoint is running post_create.sh\" && \
+sh /workspace/scripts/post_create.sh && \
+exec \"$@\"", "--"]
+
