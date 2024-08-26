@@ -24,6 +24,9 @@ jobs:
       with:
         python-version: '3.x'
 
+    - name: Fix permissions on workspace directory
+      run: sudo chown -R $USER:$USER /workspace
+
     - name: Install dependencies
       run: |
         python -m venv /workspace/venv
