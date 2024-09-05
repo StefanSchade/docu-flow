@@ -93,5 +93,14 @@ fi
 echo "These are the packages that have been installed..."
 pip list
 
+# Export PYTHONPYCACHEPREFIX globally
+export PYTHONPYCACHEPREFIX=/target/__pycache__
+
+# Optionally write it to ~/.bashrc or ~/.profile to ensure it persists in future shell sessions
+echo "export PYTHONPYCACHEPREFIX=/target/__pycache__" >> ~/.bashrc
+
+# Confirm that PYTHONPYCACHEPREFIX is set
+echo "PYTHONPYCACHEPREFIX is set to $PYTHONPYCACHEPREFIX"
+
 # Feedback message indicating the end of the process
 echo "Python virtual environment setup is complete."

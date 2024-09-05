@@ -7,4 +7,6 @@ source /venv/bin/activate
 export COVERAGE_FILE=/target/.coverage
 
 # Run pytest to discover and run all tests in that dir
-pytest --maxfail=1 --disable-warnings --cov=/workspace/src --cov-report=term --cov-report=html:/target/coverage_html /workspace/tests/
+pytest --maxfail=1 --disable-warnings --cov=/workspace/src --cov-report=term --cov-report=html:/target/coverage_html /workspace/tests/ 
+
+#--cache-dir=/target/.pytest_cache 
