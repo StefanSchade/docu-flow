@@ -1,6 +1,8 @@
 import json
 import os
 
+from .pipeline import create_step
+
 
 class PipelineManager:
     def __init__(self, config_file, data_dir):
@@ -51,6 +53,6 @@ class PipelineManager:
         for step_name in steps[start_index:end_index]:
             if self.check_dependencies(step_name):
                 print(f"Running step: {step_name}")
-                step_instance = create_step(step_name, step.config)
+                step_instance = create_step(step_name, self.config)
                 step_instance.run(self.data_dir)
                 print(f"Step {step_name} completed.")
