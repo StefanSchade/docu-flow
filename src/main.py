@@ -1,5 +1,6 @@
 import argparse
 from pipeline.pipeline_manager import PipelineManager
+from steps.preprocess_step import PreprocessStep
 
 
 def main():
