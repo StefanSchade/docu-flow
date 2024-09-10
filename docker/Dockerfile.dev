@@ -12,6 +12,8 @@ ENV http_proxy=${http_proxy}
 ENV https_proxy=${https_proxy}
 ENV no_proxy=${no_proxy}
 
+ENV PYTHONPYCACHEPREFIX=/target/__pycache__
+
 # basic dependencies
 RUN apt-get update \
     && apt-get install -y \

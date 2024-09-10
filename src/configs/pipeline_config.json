@@ -1,0 +1,14 @@
+{
+  "pipeline": [
+    {
+      "name": "PreprocessStep",
+      "outputs": ["preprocessed/"],
+      "dependencies": []
+    },
+    {
+      "name": "OCRStep",
+      "outputs": ["ocr_result.json"],
+      "dependencies": ["PreprocessStep"]
+    }
+  ]
+}
