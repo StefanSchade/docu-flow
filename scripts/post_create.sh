@@ -32,4 +32,3 @@ sudo find /venv -type f -name "*.sh" -exec chmod 755 {} \;
 
 # add current dir to PATH
 echo 'export PATH=$PATH:/workspace/scripts/' >> ~/.bashrc
-source ~/.bashrc
