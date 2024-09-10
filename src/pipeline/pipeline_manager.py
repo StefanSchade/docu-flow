@@ -51,7 +51,6 @@ class PipelineManager:
         for step_name in steps[start_index:end_index]:
             if self.check_dependencies(step_name):
                 print(f"Running step: {step_name}")
-                # Here you'd instantiate the step and run it
-                # step_instance = create_step(step_name)
-                # step_instance.run(self.data_dir)
+                step_instance = create_step(step_name, step.config)
+                step_instance.run(self.data_dir)
                 print(f"Step {step_name} completed.")
