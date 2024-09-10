@@ -1,6 +1,7 @@
 import json
 import os
 
+
 class PipelineManager:
     def __init__(self, config_file, data_dir):
         self.data_dir = data_dir
@@ -16,14 +17,18 @@ class PipelineManager:
                 for dependency in step["dependencies"]:
                     dep_outputs = self.get_step_outputs(dependency)
                     if not self.verify_outputs(dep_outputs):
-                        raise Exception(f"Dependency {dependency} has missing or corrupted output.")
+                        raise Exception(f"Dependency {dependency} has "
+                                        "missing or corrupted output.")
                 return True
         return False
 
     def get_step_outputs(self, step_name):
         for step in self.pipeline_definition["pipeline"]:
             if step["name"] == step_name:
-                return [os.path.join(self.data_dir, output) for output in step["outputs"]]
+                return [
+                    os.path.join(self.data_dir, output)
+                    for output in step["outputs"]
+                ]
         return []
 
     def verify_outputs(self, output_paths):
@@ -50,4 +55,3 @@ class PipelineManager:
                 # step_instance = create_step(step_name)
                 # step_instance.run(self.data_dir)
                 print(f"Step {step_name} completed.")
-
