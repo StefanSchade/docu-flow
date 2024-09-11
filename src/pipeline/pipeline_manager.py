@@ -4,14 +4,16 @@ import os
 from .pipeline import create_step
 
 
+def load_config(config_file):
+    with open(config_file, 'r') as file:
+        return json.load(file)
+
+
 class PipelineManager:
     def __init__(self, config_file, data_dir):
+        self.config_file = config_file
         self.data_dir = data_dir
-        self.load_pipeline_definition(config_file)
-
-    def load_pipeline_definition(self, config_file):
-        with open(config_file, 'r') as file:
-            self.pipeline_definition = json.load(file)
+        self.pipeline_definition = load_config(config_file)
 
     def check_dependencies(self, step_name):
         for step in self.pipeline_definition["pipeline"]:
@@ -44,7 +46,7 @@ class PipelineManager:
                 return False
         return True
 
-    def run_pipeline(self, start_step=None, end_step=None):
+    def run_pipeline(self, start_step=None, end_step=None, step_params=None):
 
         steps = [step["name"] for step in self.pipeline_definition["pipeline"]]
         start_index = steps.index(start_step) if start_step else 0
@@ -53,6 +55,6 @@ class PipelineManager:
         for step_name in steps[start_index:end_index]:
             if self.check_dependencies(step_name):
                 print(f"Running step: {step_name}")
-                step_instance = create_step(step_name, self.config)
+                step_instance = create_step(step_name, step_params)
                 step_instance.run(self.data_dir)
                 print(f"Step {step_name} completed.")

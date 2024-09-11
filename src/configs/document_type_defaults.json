@@ -1,0 +1,25 @@
+{
+  "book_photos": {
+    "grayscale": true,
+    "remove_noise": true,
+    "threshold": false,
+    "adaptive_threshold": false,
+    "block_size": 5,
+    "noise_constant": 7,
+    "dilate": false,
+    "erode": true,
+    "invert": false
+  },
+  "ebook_screencaptured": {
+    "grayscale": false,
+    "remove_noise": false,
+    "threshold": true,
+    "adaptive_threshold": true,
+    "block_size": 3,
+    "noise_constant": 5,
+    "dilate": false,
+    "erode": false,
+    "invert": false
+  }
+}
+
