@@ -6,15 +6,14 @@ from pipeline.pipeline_step import PipelineStep
 
 
 class PreprocessStep(PipelineStep):
-    
+
     def __init__(self, args):
         self.args = args
-
 
     def run(self, input_data):
         print(f"Preprocessing data in {input_data}")
 
-       # Metadata dictionary to store information about the step
+        # Metadata dictionary to store information about the step
         metadata = {
             "start_time": str(datetime.datetime.now()),
             "num_images_processed": 0,
@@ -43,7 +42,7 @@ class PreprocessStep(PipelineStep):
 
         # List all image files in the input directory
         for file_name in os.listdir(input_data):
-            if file_name.endswith((".png", ".jpg", ".jpeg")):  # Assuming we're processing image files
+            if file_name.endswith((".png", ".jpg", ".jpeg")):
                 file_path = os.path.join(input_data, file_name)
                 print(f"Processing file: {file_name}")
 
@@ -59,8 +58,9 @@ class PreprocessStep(PipelineStep):
                     _, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
                 if self.args.adaptive_threshold:
                     img = cv2.adaptiveThreshold(
-                        img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
-                        cv2.THRESH_BINARY, self.args.block_size, self.args.noise_constant
+                        img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                        cv2.THRESH_BINARY, self.args.block_size,
+                        self.args.noise_constant
                     )
                 if self.args.dilate:
                     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
@@ -83,16 +83,17 @@ class PreprocessStep(PipelineStep):
         # If no images were processed, we can still create the metadata file
         if not processed_any:
             print("No images processed.")
-        
+
         # Mark the end time and save metadata file
         metadata["end_time"] = str(datetime.datetime.now())
-        metadata["status"] = "completed" if processed_any else "no images processed"
+        metadata["status"] = "completed" if processed_any \
+                             else "no images processed"
 
         # Write the metadata to a JSON file
         metadata_file_path = os.path.join(preprocessed_dir, 'metadata.json')
         with open(metadata_file_path, 'w') as f:
             json.dump(metadata, f, indent=4)
 
-        print(f"Preprocessing complete. Metadata saved in {metadata_file_path}")
+        print(f"Preprocessing complete. Metadata saved"
+              f" in {metadata_file_path}")
         return True
-

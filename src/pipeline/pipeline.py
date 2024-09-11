@@ -2,7 +2,7 @@ import importlib
 
 
 def create_step(step_name, args):
-    """Dynamically create a step instance based on the step name from the pipeline config."""
+    """Dynamically instantiate step based on pipeline config."""
     # Assume the step class name is the same as the step name
     try:
         # dynamic import of python module based on name in pipeline_config.json
