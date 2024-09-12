@@ -2,6 +2,28 @@
 
 echo "post create script"
 
+#!/bin/bash
+
+# Check if 'atd' is running
+if ! pgrep -x "atd" > /dev/null
+then
+    echo "'atd' daemon is not running. Attempting to start it..."
+    sudo service atd start
+
+    # Recheck if 'atd' started successfully
+    if ! pgrep -x "atd" > /dev/null
+    then
+        echo "Error: Failed to start 'atd'. Exiting..."
+        exit 1
+    else
+        echo "'atd' daemon started successfully."
+    fi
+else
+    echo "'atd' daemon is already running."
+fi
+
+echo "'atd' daemon is running. Proceeding with script execution."
+
 echo "Wait until /var/run/docker.sock exists (retry up to 10 times)"
 attempt=0
 while [ ! -e /var/run/docker.sock ] && [ $attempt -lt 10 ]; do

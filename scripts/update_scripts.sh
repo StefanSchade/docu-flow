@@ -45,3 +45,4 @@ echo "hash -r" | at now + 1 minute 1 second
 
 echo "Scripts copied to $TEMP_DIR, ownership changed, and made executable."
 echo "Replacement scheduled in 1 minute."
+echo ${date}

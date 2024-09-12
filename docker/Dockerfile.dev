@@ -42,6 +42,7 @@ RUN apt-get update \
        tesseract-ocr \    
        libtesseract-dev \
        asciidoctor && \
+    update-rc.d atd defaults && \
     apt-get clean && \
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
     && add-apt-repository \
@@ -94,6 +95,7 @@ RUN  sudo chown -R developer:developer /home/developer/scripts && \
 
 # run post_create and pass aditional commands, also run possible additional arguments
 ENTRYPOINT [ "/bin/sh", "-c", "\
+service atd start && \
 echo \"entrypoint is running post_create.sh\" && \
 sh /home/developer/scripts/post_create.sh && \
 exec \"$@\"", "--"]
