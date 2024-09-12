@@ -20,6 +20,7 @@ RUN apt-get update \
        apt-transport-https \
        ca-certificates \
        sudo \
+       at \ 
        curl \
        wget \
        vim \
@@ -52,23 +53,8 @@ RUN apt-get update \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# create the place for the projects
-RUN mkdir -p /workspace
-
-# most developer work will be done from this dir
-WORKDIR ~/scripts
-
-# Add ~/scripts to the PATH
-ENV PATH="~/scripts:${PATH}"
-
-# Copy scripts to the scripts directory
-COPY scripts/post_create.sh \
-     scripts/update_scripts.sh \
-     scripts/setup_python_virt_env.sh \
-     ~/scripts/
-
-# take ownership and set executable
-RUN chmod -R a+r,u+rx,g+rx ~/scripts/*.sh
+# start scheduling service
+RUN service atd start
 
 # create user developer and groups developer and docker
 RUN groupadd -r -g 1010 developer && groupadd -r docker && \
@@ -78,15 +64,37 @@ RUN groupadd -r -g 1010 developer && groupadd -r docker && \
 # Allow the 'developer' user to use sudo without a password
 RUN echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
+# create the place for the projects
+RUN mkdir -p /workspace
+
 # Ensure the 'developer' user owns the workspace
 RUN chown -R developer:developer /workspace
 
 # Switch to the 'developer' user
 USER developer
 
+# Create the place for the scripts
+RUN mkdir -p /home/developer/scripts
+
+# most developer work will be done from this dir
+WORKDIR /home/developer/scripts
+
+# Add ~/scripts to the PATH
+ENV PATH="/home/developer/scripts:${PATH}"
+
+# Copy scripts to the scripts directory
+COPY scripts/post_create.sh \
+     scripts/update_scripts.sh \
+     scripts/setup_python_virt_env.sh \
+     /home/developer/scripts/
+
+# take ownership and set executable
+RUN  sudo chown -R developer:developer /home/developer/scripts && \
+     chmod -R a+r,u+rx,g+rx /home/developer/scripts/*.sh
+
 # run post_create and pass aditional commands, also run possible additional arguments
 ENTRYPOINT [ "/bin/sh", "-c", "\
 echo \"entrypoint is running post_create.sh\" && \
-sh ~/scripts/post_create.sh && \
+sh /home/developer/scripts/post_create.sh && \
 exec \"$@\"", "--"]
 

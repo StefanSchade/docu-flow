@@ -14,9 +14,10 @@ CACHED_DEV_REQ_FILE="$VENV_REQS_DIR/requirements-dev.txt"
 
 # Function to install packages
 install_packages() {
-    while IFS= read -r line; do
+   echo "Installing packages..."
+   while IFS= read -r line; do
         if [ -n "$line" ]; then
-            echo "Installing $line"
+            echo "... $line"
             pip install "$line" --break-system-packages
         fi
     done <<< "$1"
@@ -24,9 +25,10 @@ install_packages() {
 
 # Function to uninstall packages
 uninstall_packages() {
-    while IFS= read -r line; do
+   echo "Uninstalling packages..."
+   while IFS= read -r line; do
         if [ -n "$line" ]; then
-            echo "Uninstalling $line"
+            echo "... $line"
             pip uninstall -y "$line"
         fi
     done <<< "$1"
@@ -57,11 +59,11 @@ manage_requirements() {
 
 # Check if the virtual environment exists
 if [ ! -d "$VENV_DIR/bin" ]; then
-    echo "Virtual environment not found. Setting up a new virtual environment..."
+    echo "Virtual environment not found. Setting up a new virtual environment in path ${VENV_DIR}..."
     python3 -m venv "$VENV_DIR"
 
     echo "Activating the new virtual environment..."
-    source "$VENV_DIR/bin/activate"
+    . "$VENV_DIR/bin/activate"
 
     echo "Installing all packages from requirements.txt..."
     pip install --no-cache-dir --no-warn-script-location -r "$CURRENT_REQ_FILE" --break-system-packages

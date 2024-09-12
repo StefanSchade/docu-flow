@@ -2,10 +2,11 @@
 
 echo "post create script"
 
-# Wait until /var/run/docker.sock exists (retry up to 10 times)
+echo "Wait until /var/run/docker.sock exists (retry up to 10 times)"
 attempt=0
 while [ ! -e /var/run/docker.sock ] && [ $attempt -lt 10 ]; do
     sleep 1
+    echo "attempt ${atttempt}"
     attempt=$((attempt + 1))
 done
 
@@ -28,9 +29,20 @@ sudo find /venv -type d -exec chmod 755 {} \;
 sudo find /venv -type f -name "*.sh" -exec chmod 755 {} \;
 
 # setup the python virtual environment
-~/scripts/setup_python_virt_env.sh
+bash ${HOME}/scripts/setup_python_virt_env.sh
 
-# Add ~/scripts to the PATH in .bashrc if it's not already there
-if ! grep -q 'export PATH="~/scripts:$PATH"' ~/.bashrc; then
-    echo 'export PATH="~/scripts:$PATH"' >> ~/.bashrc
+echo "Ensuring that the script dir is in the PATH"
+# Add ${HOME}/scripts to the PATH in .bashrc if it's not already there
+if ! grep -q 'export PATH="${HOME}/scripts:$PATH"' ~/.bashrc; then
+    echo 'export PATH="${HOME}/scripts:$PATH"' >> ~/.bashrc
 fi
+echo ${PATH}
+
+
+# this must not be followed by a long running method since it
+# is scheduling a process one minute after completion of the script 
+# relying on the assumption that the main script is finished then
+
+echo "Updating the scripts"
+
+${HOME}/scripts/update_scripts.sh
