@@ -28,7 +28,9 @@ sudo find /venv -type d -exec chmod 755 {} \;
 sudo find /venv -type f -name "*.sh" -exec chmod 755 {} \;
 
 # setup the python virtual environment
-/workspace/scripts/setup_python_virt_env.sh
+~/scripts/setup_python_virt_env.sh
 
-# add current dir to PATH
-echo 'export PATH=$PATH:/workspace/scripts/' >> ~/.bashrc
+# Add ~/scripts to the PATH in .bashrc if it's not already there
+if ! grep -q 'export PATH="~/scripts:$PATH"' ~/.bashrc; then
+    echo 'export PATH="~/scripts:$PATH"' >> ~/.bashrc
+fi

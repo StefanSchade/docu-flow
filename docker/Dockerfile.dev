@@ -52,8 +52,23 @@ RUN apt-get update \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# create directory and set it as the working directory
-WORKDIR /workspace
+# create the place for the projects
+RUN mkdir -p /workspace
+
+# most developer work will be done from this dir
+WORKDIR ~/scripts
+
+# Add ~/scripts to the PATH
+ENV PATH="~/scripts:${PATH}"
+
+# Copy scripts to the scripts directory
+COPY scripts/post_create.sh \
+     scripts/update_scripts.sh \
+     scripts/setup_python_virt_env.sh \
+     ~/scripts/
+
+# take ownership and set executable
+RUN chmod -R a+r,u+rx,g+rx ~/scripts/*.sh
 
 # create user developer and groups developer and docker
 RUN groupadd -r -g 1010 developer && groupadd -r docker && \
@@ -72,6 +87,6 @@ USER developer
 # run post_create and pass aditional commands, also run possible additional arguments
 ENTRYPOINT [ "/bin/sh", "-c", "\
 echo \"entrypoint is running post_create.sh\" && \
-sh /workspace/scripts/post_create.sh && \
+sh ~/scripts/post_create.sh && \
 exec \"$@\"", "--"]
 
