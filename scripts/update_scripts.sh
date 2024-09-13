@@ -42,10 +42,36 @@ sudo chown -R $(whoami):$(whoami) "$TEMP_DIR"
 find "$TEMP_DIR" -name "*.sh" -exec chmod a+r,u+rx,g+rx {} \;
 
 # Schedule the replacement of the current ~/scripts directory with the temporary one
-echo "mv -T $TEMP_DIR $TARGET_DIR && rm -rf $TEMP_DIR" | at now + 1 minute
+# echo "mv -T $TEMP_DIR $TARGET_DIR && rm -rf $TEMP_DIR" | at now + 1 minute
 
 # As the very last operation, refresh the shell's command cache by rehashing
-echo "hash -r" | at now + 1 minute 1 second
+# echo "hash -r" | at now + 1 minute 1 second
+
+# Define log file
+DELAYED_ACTION_LOGFILE="${HOME}/delayed_action.log"
+
+# Schedule the replacement of the current ~/scripts directory with the temporary one
+# echo "echo 'Starting script at $(date)' >> $DELAYED_ACTION_LOGFILE; \
+# whoami >> $DELAYED_ACTION_LOGFILE; \
+# cp -r /home/developer/.tmp_scripts_$RANDOM_NUMBER/* /home/developer/scripts/ >> $DELAYED_ACTION_LOGFILE 2>&1; \
+# rm -rf /home/developer/.tmp_scripts_$RANDOM_NUMBER >> $DELAYED_ACTION_LOGFILE 2>&1; \
+# echo 'Script completed at $(date)' >> $DELAYED_ACTION_LOGFILE; \
+# echo -e '\a'" | at now + 2 minute
+
+rm -f $DELAYED_ACTION_LOGFILE
+
+# Schedule the replacement of the current ~/scripts directory with the temporary one
+echo "EXEC_TIME=\$(date); \
+echo \"Starting script at $(date)\" >> $DELAYED_ACTION_LOGFILE; \
+whoami >> $DELAYED_ACTION_LOGFILE; \
+cp -r /home/developer/.tmp_scripts_$RANDOM_NUMBER/* /home/developer/scripts/ >> $DELAYED_ACTION_LOGFILE 2>&1; \
+rm -rf /home/developer/.tmp_scripts_$RANDOM_NUMBER >> $DELAYED_ACTION_LOGFILE 2>&1; \
+EXEC_TIME=\$(date); \
+echo \"Script completed at \${EXEC_TIME}\" >> $DELAYED_ACTION_LOGFILE; \
+echo -e '\a'" | at now + 1 minutes
+
+# Add a line to log the time of committing and the job queue status to the log file
+atq >> $DELAYED_ACTION_LOGFILE
 
 echo "Scripts copied to $TEMP_DIR, ownership changed, and made executable."
 echo "Replacement scheduled in 1 minute from $(date)"

@@ -42,7 +42,6 @@ RUN apt-get update \
        tesseract-ocr \    
        libtesseract-dev \
        asciidoctor && \
-    update-rc.d atd defaults && \
     apt-get clean && \
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
     && add-apt-repository \
@@ -53,9 +52,6 @@ RUN apt-get update \
        docker-ce-cli \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
-# start scheduling service
-RUN service atd start
 
 # create user developer and groups developer and docker
 RUN groupadd -r -g 1010 developer && groupadd -r docker && \

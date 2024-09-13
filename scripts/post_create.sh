@@ -5,8 +5,7 @@ echo "post create script"
 #!/bin/bash
 
 # Check if 'atd' is running
-if ! pgrep -x "atd" > /dev/null
-then
+if ! pgrep -x "atd" > /dev/null; then
     echo "'atd' daemon is not running. Attempting to start it..."
     sudo service atd start
 
