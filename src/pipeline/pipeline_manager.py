@@ -11,10 +11,14 @@ def load_config(config_file):
 
 
 class PipelineManager:
-    def __init__(self, config_file, data_dir):
+    def __init__(self, config_file=None, data_dir=None):
         self.config_file = config_file
         self.data_dir = data_dir
-        self.pipeline_definition = load_config(config_file)
+
+        if self.config_file:
+            self.pipeline_definition = load_config(config_file)
+        else:
+            self.pipeline_definition = None  # To be assigned manually for tests
 
     def check_dependencies(self, step_name):
         for step in self.pipeline_definition["pipeline"]:
