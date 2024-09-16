@@ -83,6 +83,7 @@ ENV PATH="/home/developer/scripts:${PATH}"
 COPY scripts/post_create.sh \
      scripts/update_scripts.sh \
      scripts/setup_python_virt_env.sh \
+     scripts/run_entrypoint.sh \
      /home/developer/scripts/
 
 # take ownership and set executable
