@@ -6,7 +6,7 @@
       "dependencies": []
     },
     {
-      "name": "OCRStep",
+      "name": "OCR",
       "outputs": ["ocr_result.json"],
       "dependencies": ["PreprocessStep"]
     }

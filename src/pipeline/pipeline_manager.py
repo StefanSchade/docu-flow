@@ -1,5 +1,6 @@
 import json
 import os
+import tqdm
 
 from .pipeline import create_step
 
@@ -55,6 +56,14 @@ class PipelineManager:
         for step_name in steps[start_index:end_index]:
             if self.check_dependencies(step_name):
                 print(f"Running step: {step_name}")
+                
+                # Create the step instance
                 step_instance = create_step(step_name, step_params)
-                step_instance.run(self.data_dir)
+
+                # Get the total number of items to process in this step
+                total_items = step_instance.get_total_items(self.data_dir)
+
+                # Create the progress bar for this step
+                with tqdm.tqdm(total=total_items, desc=step_name, unit="item") as pbar:
+                    step_instance.run(self.data_dir, progress_bar=pbar)
                 print(f"Step {step_name} completed.")
