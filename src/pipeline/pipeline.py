@@ -8,7 +8,7 @@ def create_step(step_name, args):
         # dynamic import of python module based on name in pipeline_config.json
         module = importlib.import_module(f"steps.{step_name.lower()}_step")
         # retrieve class from the module and instentiate it using args
-        step_class = getattr(module, step_name)
+        step_class = getattr(module, f"{step_name}Step")
         return step_class(args)
     except (ModuleNotFoundError, AttributeError) as e:
         raise ValueError(f"Step {step_name} not recognized: {e}")

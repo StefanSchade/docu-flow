@@ -22,30 +22,50 @@ def merge_parameters(json_params, args):
 
 def main():
     parser = argparse.ArgumentParser(description='Run OCR pipeline')
+    
+    # in the production setup or when simply running the code in dev mode
+    # the defaults are used - these values are not intended to be changed
+    # by the user and are not documented - they are externalized for
+    # integration testing
+
+    parser.add_argument(
+        '--data-dir',
+        type=str,
+        default='/data', # default mount point for both in- and output data
+        help=argparse.SUPPRESS # hide from help output
+    )            
+
     parser.add_argument(
         '--config',
         type=str,
-        default='src/configs/pipeline_config.json',
-        help='Path to pipeline config file'
+        default='/workspace/src/configs/pipeline_config.json', # default pipeline def.
+        help=argparse.SUPPRESS # hide from help output
     )
+
     parser.add_argument(
         '--document_type_defaults',
         type=str,
-        default='src/configs/document_type_defaults.json',
-        help='Path to document type defaults file'
+        default='/workspace/src/configs/document_type_defaults.json', # sets of defaults
+        help=argparse.SUPPRESS # hide from help output
     )
+
+    # user pointing arguments
+
     parser.add_argument(
         '--document_type',
         type=str,
-        default='book_photos',
-        help='Type of document (e.g., book_photos, ebook_screencaptured)'
+        default=None,
+        help='acitivate a document type dependent set of defaults' \
+             '(possible values: book_photos, ebook_screencaptured)'
     )
+
     parser.add_argument(
         '--start-step',
         type=str,
         default=None,
         help='Step to start the pipeline from'
     )
+
     parser.add_argument(
         '--end-step',
         type=str,
@@ -71,14 +91,14 @@ def main():
         # Initialize the pipeline manager
         pipeline_manager = PipelineManager(
                 config_file=args.config,
-                data_dir='/workspace/data'
+                data_dir=args.data_dir
         )
 
         # Run the pipeline (passing merged parameters to the steps)
         pipeline_manager.run_pipeline(
             start_step=args.start_step,
             end_step=args.end_step,
-            step_parameters=step_parameters
+            step_params=step_parameters
         )
 
     except Exception as e:

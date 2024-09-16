@@ -12,7 +12,7 @@ else
 fi
 
 # Hardcoded data directory in the container
-DATA_DIR="/workspace/data"
+DATA_DIR="/data"
 
 # Run the Python pipeline, passing all script arguments and setting the data directory
 python /workspace/src/main.py --data-dir "$DATA_DIR" "$@"
