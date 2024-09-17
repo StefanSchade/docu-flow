@@ -1,6 +1,10 @@
 # proect specific ignores
 zscaler.crt
 repo.txt
+source.txt
+src.txt
+scripts.txt
+cmd.txt
 
 target/
 dev_data/
