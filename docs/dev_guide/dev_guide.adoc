@@ -1,6 +1,6 @@
 = Developer Guide
 
-== Gettinig Started 
+== Getting Started 
 
 === prerequisites 
 
@@ -83,4 +83,33 @@ The 2 alternatives would have been to put it inside
 * normal mount point
 
 The first option would imply that the `requirement.txt` and `requirement-dev.txt` files are copied to the container. This would contradict the idea t
+
+== Developer Use Cases
+
+=== Starting the Dev Container 
+
+Scripts facilitate container startup. They reside in `/scripts`.
+
+==== MacOS and Linux
+
+Not implemented currently
+
+==== Windows
+
+Relevant scripts are:
+
+* `dev_container_env.cmd` reduces redundancy and keeps the configuration consistent across the other scripts.
+* `dev_container_build.cmd` checks imestamps to decide whether to rebuild the Docker image - also creates a Docker volume if this does not exist already
+* `dev_container_run.cmd`
+* `dev_container_build_and_run.cmd`
+
+Use Cases:
+
+* Build and Run Normally: `dev_container_build_and_run.cmd`
+* Force Rebuild and Run: `dev_container_build_and_run.cmd --force-rebuild` 
+* Run a Specific Command in the Container: `dev_container_build_and_run.cmd python script.py`
+* Force Rebuild and Run a Specific Command: `dev_container_build_and_run.cmd --force-rebuild python script.py`
+
+
+
 

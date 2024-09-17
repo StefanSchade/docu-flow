@@ -1,29 +1,37 @@
 @echo off
-REM Central script to manage the build and run process for the Docker container
+REM Script to build and run the Docker container for development
 
-REM Check if data directory argument is provided
-if "%~1"=="" (
-    echo Usage: dev_container_build_and_run.cmd [data_directory_path]
-    exit /b 1
+REM Load shared environment variables
+call "%~dp0dev_container_env.cmd"
+
+REM Initialize variables
+set "FORCE_REBUILD=0"
+set "RUN_CMD="
+
+REM Parse command-line arguments
+:parse_args
+if "%~1"=="" goto end_parse
+if /I "%~1"=="--force-rebuild" (
+    set "FORCE_REBUILD=1"
+) else (
+    if "%RUN_CMD%"=="" (
+        set "RUN_CMD=%~1"
+    ) else (
+        set "RUN_CMD=%RUN_CMD% %~1"
+    )
 )
+shift
+goto parse_args
 
-REM Define image and volume names centrally
-set IMAGE_NAME=dev-docu-flow
-set VOLUME_NAME=docu-flow-venv
-
-REM Get the absolute path of the data directory
-for %%I in (%~1) do set "DATA_DIR=%%~fI"
-
-REM Determine the project root directory based on the script's location
-set "PROJECT_ROOT=%~dp0.."
+:end_parse
 
 REM Build the container
-call dev_container_build.cmd %IMAGE_NAME% %VOLUME_NAME%
+call "%~dp0dev_container_build.cmd" %* --force-rebuild %FORCE_REBUILD%
 
-REM initialize venv in container
-REM call dev_container_run.cmd %IMAGE_NAME% %VOLUME_NAME% %DATA_DIR% %INIT_CMD%
-REM call dev_container_run.cmd %IMAGE_NAME% %VOLUME_NAME% %DATA_DIR% "bash -c /workspace/scripts/setup_python_virt_env.sh"
+REM Run the container
+if "%RUN_CMD%"=="" (
+    call "%~dp0dev_container_run.cmd"
+) else (
+    call "%~dp0dev_container_run.cmd" %RUN_CMD%
+)
 
-echo Starting interactive shell
-REM Run the container:
-call dev_container_run.cmd %IMAGE_NAME% %VOLUME_NAME% %DATA_DIR% "/bin/bash"  
