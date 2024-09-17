@@ -112,4 +112,121 @@ Use Cases:
 
 
 
+==== Starting the container from Windows
+
+To start the container from Windows, you can use the provided PowerShell scripts. Below are instructions for running the scripts from both PowerShell and the Command Prompt (CMD), including how to set the script execution policy if necessary.
+
+===== Running from Windows PowerShell
+
+To run the scripts from PowerShell:
+
+. *Open PowerShell:* Open a PowerShell window.
+
+. *Navigate to the scripts directory:* Use the `cd` command to navigate to the directory where your scripts are located.
+
+. *Set the execution policy (if necessary):* If you have not previously allowed PowerShell to run scripts, you may need to set the execution policy. You can set it to `RemoteSigned` for the current user:
+
+[source, powershell]
+----
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+----
+_Note: You do not need to run PowerShell as Administrator when setting the execution policy for the current user._
+
+[start=4]
+. *Run the build and run script:*
+
+  ** Build and run normally:
+
+      .\dev_container_build_and_run.ps1
+
+   ** Force rebuild and run:
+
+      .\dev_container_build_and_run.ps1 -ForceRebuild
+
+   ** Run a specific command in the container:
+
+      .\dev_container_build_and_run.ps1 -RunCmd "python script.py"
+
+   ** Force rebuild and run a specific command:
+
+      .\dev_container_build_and_run.ps1 -ForceRebuild -RunCmd "python script.py"
+
+===== Running from Command Prompt (CMD)
+
+To run the scripts from the Windows Command Prompt (CMD):
+
+. *Open Command Prompt:* Open a Command Prompt window.
+
+. *Navigate to the scripts directory:* Use the `cd` command to navigate to the directory where your scripts are located.
+
+. *Run the PowerShell scripts using `powershell -File`:*
+
+   ** Build and run normally:
+
+      powershell -File dev_container_build_and_run.ps1
+
+   ** Force rebuild and run:
+
+      powershell -File dev_container_build_and_run.ps1 -ForceRebuild
+
+   ** Run a specific command in the container:
+
+      powershell -File dev_container_build_and_run.ps1 -RunCmd "python script.py"
+
+   ** Force rebuild and run a specific command:
+
+      powershell -File dev_container_build_and_run.ps1 -ForceRebuild -RunCmd "python script.py"
+
+===== Script Execution Policy
+
+If you encounter an error related to script execution policies when running the scripts, you may need to adjust your PowerShell execution policy to allow scripts to run.
+
+To set the execution policy to allow running local scripts:
+
+Open PowerShell: Open a PowerShell window. You do not need to run it as Administrator when setting the execution policy for the current user.
+
+Set the execution policy:
+
+[source, powershell]
+----
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+----
+This command allows you to run scripts you've created locally while still protecting against running scripts from untrusted sources.
+
+Confirm the change: You may be prompted to confirm the change. Type Y and press Enter.
+
+Note: Be cautious when changing the execution policy, and only run scripts from trusted sources.
+
+===== Additional Notes
+
+Ensure Docker Desktop is running: Before running the scripts, make sure that Docker Desktop is installed and running on your Windows machine.
+
+Script Parameters: The dev_container_build_and_run.ps1 script accepts the following parameters:
+
+-ForceRebuild: Forces the Docker image to be rebuilt, even if it is up-to-date.
+
+-RunCmd: Specifies a command to run inside the container instead of starting an interactive shell.
+
+Docker Socket Mounting: The scripts mount the Docker socket inside the container to allow Docker commands to be run from within the container. On Windows, the Docker socket is typically mounted using:
+
+[source, powershell]
+----
+-v "//var/run/docker.sock":"/var/run/docker.sock"
+----
+If you encounter issues, you can adjust the mount to use the named pipe:
+
+[source, powershell]
+----
+--mount type=npipe,source=\\.\pipe\docker_engine,target=\\.\pipe\docker_engine
+----
+Adjusting Scripts if Necessary: If you need to adjust the scripts or encounter any issues, you can edit them using a text editor. Ensure that the paths and variables are correctly set for your environment.
+
+Script Execution Policy Scope: Changing the execution policy for the current user (CurrentUser scope) does not require administrative privileges and only affects your user account.
+
+Security Considerations: Always be cautious when running scripts, especially those obtained from external sources. Review the contents of scripts before executing them to ensure they are safe.
+
+Further Assistance: If you need additional help or encounter issues, consider consulting the Docker or PowerShell documentation, or reach out to your development team for support.
+
+
+
 
