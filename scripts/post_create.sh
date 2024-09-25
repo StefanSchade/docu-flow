@@ -52,13 +52,26 @@ sudo find /venv -type f -name "*.sh" -exec chmod 755 {} \;
 # setup the python virtual environment
 bash ${HOME}/scripts/setup_python_virt_env.sh
 
-echo "Ensuring that the script dir is in the PATH"
-# Add ${HOME}/scripts to the PATH in .bashrc if it's not already there
+# I have the PYTHONPATH doubled in the shell - apparently the ENV definition in the Dockerfile.dev
+# is sufficient also for interactive shells. For the moment I comment out this section to ckeck
+# if this is indeed redundand
+#
+# echo "Checking PYTHONPATH in .bashrc"
+# if ! grep -q 'export PYTHONPATH="/workspace/src/:/workspace/tests/:$PYTHONPATH"' ~/.bashrc; then
+#     echo "Adding source and test dir to PYTHONPATH"
+#     echo 'export PYTHONPATH="/workspace/src/:/workspace/tests/:$PYTHONPATH"' >> ~/.bashrc
+# fi
+
+echo "Checking HOME in .bashrc"
 if ! grep -q 'export PATH="${HOME}/scripts:$PATH"' ~/.bashrc; then
+    echo "Adding scripts folder to PATH"
     echo 'export PATH="${HOME}/scripts:$PATH"' >> ~/.bashrc
 fi
-echo ${PATH}
 
+. ~/.bashrc
+
+echo "PYTHONPATH=${PYTHONPATH}"
+echo "PATH=${PATH}"
 
 # this must not be followed by a long running method since it
 # is scheduling a process one minute after completion of the script 

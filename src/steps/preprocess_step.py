@@ -2,7 +2,7 @@ import os
 import cv2
 import json
 import datetime
-from pipeline.pipeline_step import PipelineStep
+from ..pipeline.pipeline_step import PipelineStep
 
 
 class PreprocessStep(PipelineStep):

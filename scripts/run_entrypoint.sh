@@ -1,5 +1,9 @@
 #!/bin/bash
 
+
+# Set PYTHONPATH to include /workspace
+export PYTHONPATH="/workspace:$PYTHONPATH"
+
 # Activate the virtual environment
 source /venv/bin/activate
 
@@ -15,7 +19,7 @@ fi
 DATA_DIR="/data"
 
 # Run the Python pipeline, passing all script arguments and setting the data directory
-python /workspace/src/main.py --data-dir "$DATA_DIR" "$@"
+python -m src.main --data-dir "$DATA_DIR" "$@"
 
 # Deactivate the virtual environment
 deactivate

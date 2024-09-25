@@ -1,4 +1,7 @@
 debugpy
 pytest
 pytest-cov
+mypy
+types-tqdm
+black
 flake8

@@ -1,7 +1,8 @@
 import json
 import argparse
-from pipeline.pipeline_manager import PipelineManager
-from steps.preprocess_step import PreprocessStep
+from argparse import Namespace
+from .pipeline.pipeline_manager import PipelineManager
+from .steps.preprocess_step import PreprocessStep
 
 
 def load_document_type_defaults(document_type_file, document_type):
@@ -22,7 +23,7 @@ def merge_parameters(json_params, args):
 
 def main():
     parser = argparse.ArgumentParser(description='Run OCR pipeline')
-    
+
     # in the production setup or when simply running the code in dev mode
     # the defaults are used - these values are not intended to be changed
     # by the user and are not documented - they are externalized for
@@ -32,21 +33,21 @@ def main():
         '--data-dir',
         type=str,
         default='/data', # default mount point for both in- and output data
-        help=argparse.SUPPRESS # hide from help output
-    )            
+        help=argparse.SUPPRESS  # hide from help output
+    )
 
     parser.add_argument(
         '--config',
         type=str,
-        default='/workspace/src/configs/pipeline_config.json', # default pipeline def.
-        help=argparse.SUPPRESS # hide from help output
+        default='/workspace/src/configs/pipeline_config.json',  # default pipeline def.
+        help=argparse.SUPPRESS  # hide from help output
     )
 
     parser.add_argument(
         '--document_type_defaults',
         type=str,
-        default='/workspace/src/configs/document_type_defaults.json', # sets of defaults
-        help=argparse.SUPPRESS # hide from help output
+        default='/workspace/src/configs/document_type_defaults.json',  # sets of defaults
+        help=argparse.SUPPRESS  # hide from help output
     )
 
     # user pointing arguments
@@ -85,7 +86,8 @@ def main():
     )
 
     # Merge JSON parameters with command-line overrides
-    step_parameters = merge_parameters(document_type_defaults, args)
+    step_parameters_dict = merge_parameters(document_type_defaults, args)
+    step_parameters = Namespace(**step_parameters_dict)
 
     try:
         # Initialize the pipeline manager

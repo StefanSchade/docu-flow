@@ -13,6 +13,8 @@ ENV https_proxy=${https_proxy}
 ENV no_proxy=${no_proxy}
 
 ENV PYTHONPYCACHEPREFIX=/target/__pycache__
+ENV PYTHONPATH="/workspace/src/:/workspace/tests/:$PYTHONPATH"
+ENV PATH="/workspace/scripts:$PATH"
 
 # basic dependencies
 RUN apt-get update \

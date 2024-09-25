@@ -74,5 +74,5 @@ echo -e '\a'" | at now + 1 minutes
 atq >> $DELAYED_ACTION_LOGFILE
 
 echo "Scripts copied to $TEMP_DIR, ownership changed, and made executable."
-echo "Replacement scheduled in 1 minute from $(date)"
+echo "Replacement scheduled and will be executed within 1 minute from $(date)"
 
