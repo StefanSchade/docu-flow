@@ -10,27 +10,31 @@ def pipeline_manager():
             {
                 "name": "PreprocessStep",
                 "dependencies": ["DependencyStep1"],
-                "outputs": ["output1.png"]
+                "outputs": ["output1.png"],
             },
             {
                 "name": "DependencyStep1",
                 "dependencies": [],
-                "outputs": ["dependency_output1.png"]
-            }
+                "outputs": ["dependency_output1.png"],
+            },
         ]
     }
-    
+
     manager = PipelineManager(config_file="", data_dir="/data")
     manager.pipeline_definition = mock_pipeline_definition
     return manager
 
+
 # Asserts that the Pipelinemanager...
+
 
 # ...can verify dependencies for a pipeline step
 def test_check_dependencies(pipeline_manager):
     # Mock os.path.exists to always return True (to simulate that files exist)
-    with patch('os.path.exists', return_value=True), \
-         patch('os.path.getsize', return_value=100):  # Assume file is non-empty
+    with (
+        patch("os.path.exists", return_value=True),
+        patch("os.path.getsize", return_value=100),
+    ):  # Assume file is non-empty
         assert pipeline_manager.check_dependencies("PreprocessStep")
 
 
