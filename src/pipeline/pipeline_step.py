@@ -15,6 +15,6 @@ class PipelineStep(ABC):
 
     def get_total_items(self, input_data=None):
         """
-        Optional method for speciffyig the total number of items to process test a very long line and how it is handled by black
+        Optional method for speciffyig the total number of items to process
         """
         return 100  # Default to 100 (for percentage completion)

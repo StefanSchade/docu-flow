@@ -8,21 +8,20 @@ from ..pipeline.pipeline_step import PipelineStep
 class PreprocessStep(PipelineStep):
 
     def __init__(self, parameters):
-        self.grayscale = getattr(parameters, "grayscale", False)  # noqa: 501
-        self.remove_noise = getattr(
-            parameters, "remove_noise", False
-        )  # noqa: 501
-        self.threshold = getattr(parameters, "threshold", False)  # noqa: 501
-        self.adaptive_threshold = getattr(
-            parameters, "adaptive_threshold", False
-        )  # noqa: 501
-        self.block_size = getattr(parameters, "block_size", 3)  # noqa: 501
-        self.noise_constant = getattr(
-            parameters, "noise_constant", 5
-        )  # noqa: 501
-        self.dilate = getattr(parameters, "dilate", False)  # noqa: 501
-        self.erode = getattr(parameters, "erode", False)  # noqa: 501
-        self.invert = getattr(parameters, "invert", False)  # noqa: 501
+
+        # fmt: off
+
+        self.grayscale =            getattr(parameters, "grayscale",            False)  # noqa: 501
+        self.remove_noise =         getattr(parameters, "remove_noise",         False)  # noqa: 501
+        self.threshold =            getattr(parameters, "threshold",            False)  # noqa: 501
+        self.adaptive_threshold =   getattr(parameters, "adaptive_threshold",   False)  # noqa: 501
+        self.block_size =           getattr(parameters, "block_size",           3)      # noqa: 501
+        self.noise_constant =       getattr(parameters, "noise_constant",       5)      # noqa: 501
+        self.dilate =               getattr(parameters, "dilate",               False)  # noqa: 501
+        self.erode =                getattr(parameters, "erode",                False)  # noqa: 501
+        self.invert =               getattr(parameters, "invert",               False)  # noqa: 501
+
+        # fmt: on
 
     @staticmethod
     def set_arguments(parser):
@@ -85,7 +84,10 @@ class PreprocessStep(PipelineStep):
         return len(image_files)
 
     def run(self, input_data, progress_bar=None):
-        """Run the preprocessing on all image files in the input_data directory."""
+        """
+        Run the preprocessing on all image files in the input_data
+        directory.
+        """
         # print(f"Preprocessing data in {input_data}")
 
         metadata = self._initialize_metadata()
@@ -105,7 +107,8 @@ class PreprocessStep(PipelineStep):
             progress_bar.close()
 
         print(
-            f"Preprocessing complete. Metadata saved in {preprocessed_dir}/metadata.json"
+            "Preprocessing complete. Metadata saved "
+            f"in {preprocessed_dir}/metadata.json"
         )
         return True
 

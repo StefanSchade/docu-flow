@@ -47,7 +47,7 @@ def main():
     parser.add_argument(
         "--document_type_defaults",
         type=str,
-        default="/workspace/src/configs/document_type_defaults.json",  # sets of defaults
+        default="/workspace/src/configs/document_type_defaults.json",
         help=argparse.SUPPRESS,  # hide from help output
     )
 
