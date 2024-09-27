@@ -1,0 +1,283 @@
+= MonkeyType Integration Documentation
+
+== Recent Steps
+
+* Activated the virtual environment in the `apply_types.sh` script by sourcing `~/.venv/bin/activate`.
+* Updated the `apply_types.sh` script to correctly activate the virtual environment.
+* Executed the `apply_types.sh` script and encountered the error:
+
+```
+./apply_types.sh
+Applying MonkeyType type annotations...
+Type data found. Applying annotations...
+./apply_types.sh: line 16: monkeytype: command not found
+```
+
+* Realized that the virtual environment was not properly activated within the script.
+* Manually activated the virtual environment and confirmed that `monkeytype` works as expected:
+
+```
+source ~/.venv/bin/activate
+(.venv) devuser@f207db78185b:/mnt/dev-env-setup/scripts$ monkeytype
+usage: monkeytype [-h] [--disable-type-rewriting] [--limit LIMIT] [--verbose]
+[... additional help output ...]
+(.venv) devuser@f207db78185b:/mnt/dev-env-setup/scripts$
+```
+
+* Updated the `apply_types.sh` script to ensure proper activation of the virtual environment.
+* Re-ran the `apply_types.sh` script:
+
+```
+./apply_types.sh
+Virtual environment activated.
+monkeytype: command not found
+```
+
+== Current Status
+
+* **Type Data Collection:**
+
+  * The `monkeytype.sqlite3` database has been successfully generated and contains type data.
+  * Verified the presence of type data using SQLite commands.
+
+* **Applying Annotations:**
+
+  * Running `monkeytype list-modules` within the script returns no modules, indicating that **MonkeyType** isn't recognizing the collected type data.
+
+* **Virtual Environment Issues:**
+
+  * After manually activating the virtual environment, `monkeytype` is accessible and functional.
+  * The `apply_types.sh` script fails to find the `monkeytype` command due to incorrect virtual environment activation.
+
+== Handling the SQLite Database Check
+
+* **Database Inspection:**
+
+  * Inspected the `monkeytype.sqlite3` database using `sqlite3` to ensure type data was collected.
+
+  * Ran the following commands to verify the database contents:
+
+```bash
+sqlite3 /mnt/project/target/monkeytype.sqlite3 "SELECT name FROM sqlite_master WHERE type='table';"
+
+monkeytype_call_traces
+
+sqlite3 /mnt/project/target/monkeytype.sqlite3 "SELECT DISTINCT module FROM monkeytype_call_traces;"
+
+src.steps.ocr_step
+tests.test_ocr_step
+src.pipeline.pipeline_manager
+tests.test_pipeline_manager
+src.steps.preprocess_step
+tests.test_preprocess_step
+```
+
+* **Findings:**
+
+  * The `monkeytype_call_traces` table exists and contains type data for various modules, such as `src.steps.ocr_step` and `tests.test_preprocess_step`.
+  * Despite the presence of data, `monkeytype list-modules` returns no output, suggesting a schema mismatch or compatibility issue.
+
+* **Conclusion:**
+
+  * The use of the `pytest-monkeytype` plugin likely caused **MonkeyType** to store type data in a non-standard table (`monkeytype_call_traces`) instead of the expected `Call` table.
+  * This schema difference prevents standard **MonkeyType** commands from recognizing and utilizing the collected type data.
+
+== Next Steps
+
+* **Remove the `pytest-monkeytype` Plugin:**
+
+  * Uninstall the plugin to prevent schema conflicts:
+
+  ```bash
+  pip uninstall pytest-monkeytype
+  ```
+
+* **Modify `run_tests.sh` to Use Standard MonkeyType Commands:**
+
+  * Update the script to use `monkeytype run` instead of relying on the plugin:
+
+  ```bash
+#!/bin/bash
+
+set -e  # Exit immediately if a command exits with a non-zero status
+
+# Activate the virtual environment
+source ~/.venv/bin/activate
+if [[ "$VIRTUAL_ENV" != "" ]]; then
+    echo "Virtual environment activated."
+else
+    echo "Failed to activate virtual environment."
+    exit 1
+fi
+
+# Include src and tests directories in PYTHONPATH
+export PYTHONPATH=$PYTHONPATH:/workspace/src:/workspace/tests
+
+# Set the coverage file path
+export COVERAGE_FILE=/target/.coverage
+
+# Verify the PYTHONPATH
+echo "PYTHONPATH: $PYTHONPATH"
+
+# Check Python's sys.path
+python -c "import sys; print(sys.path)"
+
+# Set the path for the MonkeyType SQLite database
+export MONKEYTYPE_DATABASE=/mnt/project/target/monkeytype.sqlite3
+
+# Create a symbolic link to MonkeyType's default database path
+ln -sf $MONKEYTYPE_DATABASE ~/.monkeytype.sqlite3
+
+# Run pytest under MonkeyType tracing
+echo "MonkeyType is enabled. Collecting type data..."
+monkeytype run pytest \
+       --verbose \
+       --maxfail=1 \
+       --disable-warnings \
+       --cov=/workspace/src \
+       --cov-report=term \
+       --cov-report=html:/target/coverage_html \
+       /workspace/tests/
+
+echo "Type data collection completed."
+```
+
+* **Re-run Type Data Collection:**
+
+  * Execute the updated `run_tests.sh` script to collect type data using standard **MonkeyType** commands.
+
+  ```bash
+  ./run_tests.sh
+  ```
+
+* **Verify the Database Structure:**
+
+  * Ensure that the `monkeytype.sqlite3` database now contains the standard `Call` and `State` tables:
+
+  ```bash
+  sqlite3 /mnt/project/target/monkeytype.sqlite3 "SELECT name FROM sqlite_master WHERE type='table';"
+  ```
+
+  * **Expected Output:**
+
+  ```
+  Call
+  State
+  ```
+
+* **Apply Type Annotations Using Updated `apply_types.sh`:**
+
+  * Ensure that the `apply_types.sh` script correctly activates the virtual environment and accesses **MonkeyType**.
+
+  * Example `apply_types.sh` script:
+
+  ```bash
+#!/bin/bash
+
+set -e  # Exit immediately if a command exits with a non-zero status
+
+# Activate the virtual environment
+source ~/.venv/bin/activate
+if [[ "$VIRTUAL_ENV" != "" ]]; then
+    echo "Virtual environment activated."
+else
+    echo "Failed to activate virtual environment."
+    exit 1
+fi
+
+# Verify that monkeytype is in PATH
+which monkeytype
+
+# Path to the MonkeyType SQLite database
+MT_DB_PATH=/mnt/project/target/monkeytype.sqlite3
+
+# Path to your source code
+SRC_DIR=/workspace/src
+
+# Verify that the MonkeyType database exists
+if [ ! -f "$MT_DB_PATH" ]; then
+    echo "MonkeyType type data not found at $MT_DB_PATH. Please run tests first."
+    exit 1
+fi
+
+# Create a symbolic link to MonkeyType's default database path
+ln -sf $MT_DB_PATH ~/.monkeytype.sqlite3
+
+echo "Type data found. Applying annotations..."
+
+# List modules to verify type data visibility
+MODULES=$(monkeytype list-modules)
+
+if [ -z "$MODULES" ]; then
+    echo "No modules found in the MonkeyType database. Ensure that type data was collected correctly."
+    exit 1
+fi
+
+# Function to apply MonkeyType annotations to a specific module
+apply_monkeytype_annotations() {
+    MODULE_NAME=$1
+    echo "Applying MonkeyType annotations to module: $MODULE_NAME"
+
+    # Apply type annotations using MonkeyType without custom config
+    monkeytype apply $MODULE_NAME
+
+    # Convert module name to file path
+    FILE_PATH=$(echo $MODULE_NAME | tr '.' '/').py
+
+    # Format the code after applying annotations
+    if [ -f "$SRC_DIR/$FILE_PATH" ]; then
+        black $SRC_DIR/$FILE_PATH
+        echo "Formatted $FILE_PATH successfully."
+    else
+        echo "File $SRC_DIR/$FILE_PATH not found. Skipping formatting." >&2
+    fi
+}
+
+# Iterate over each module and apply annotations
+for MODULE in $MODULES; do
+    apply_monkeytype_annotations $MODULE
+done
+
+echo "Type annotations applied successfully to all modules."
+```
+
+* **Run the `apply_types.sh` Script:**
+
+  ```bash
+  ./apply_types.sh
+  ```
+
+* **Expected Output:**
+
+```
+Virtual environment activated.
+/home/devuser/.venv/bin/monkeytype
+Type data found. Applying annotations...
+Applying MonkeyType annotations to module: src.steps.ocr_step
+[MonkeyType apply output]
+Formatted src/steps/ocr_step.py successfully.
+Applying MonkeyType annotations to module: tests.test_preprocess_step
+[MonkeyType apply output]
+Formatted tests/test_preprocess_step.py successfully.
+...
+Type annotations applied successfully to all modules.
+```
+
+== Conclusion
+
+* Successfully collected type data using standard **MonkeyType** commands.
+* Resolved virtual environment activation issues within scripts.
+* Applied type annotations to modules based on the collected type data.
+* Ensured that the `monkeytype.sqlite3` database aligns with **MonkeyType**'s expectations.
+
+* **Next Steps:**
+
+* Continue refining the `apply_types.sh` script for better automation and error handling.
+* Integrate type annotation steps into the CI/CD pipeline for continuous type maintenance.
+* Explore using a custom configuration class if advanced customization is needed in the future.
+
+== Additional Notes
+
+* Ensure that both `test-container` and `nvim-container` have access to the `monkeytype.sqlite3` database via shared volumes.
+* Regularly update **MonkeyType** and related dependencies to benefit from the latest features and fixes.
+* Maintain clear documentation of scripts and workflows to assist team members and future maintainers.

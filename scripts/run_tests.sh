@@ -28,7 +28,7 @@ export MT_DB_PATH=/target/monkeytype.sqlite3
 if [ "$MONKEYTYPE_ENABLED" = "1" ]; then
    echo "MonkeyType is enabled. Collecting type data..."
    # https://pypi.org/project/pytest-monkeytype/
-   pytest --monkeytype-output=/target/monkeytype.sqlite3  \
+   py.test --monkeytype-output=/target/monkeytype.sqlite3  \
           --verbose                                       \
           --maxfail=1                                     \
           --disable-warnings                              \
