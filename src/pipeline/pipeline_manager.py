@@ -57,9 +57,7 @@ class PipelineManager:
 
     def run_pipeline(self, start_step=None, end_step=None, step_params=None):
 
-        steps = [
-            step["name"] for step in self.pipeline_definition["pipeline"]
-        ]
+        steps = [step["name"] for step in self.pipeline_definition["pipeline"]]
         start_index = steps.index(start_step) if start_step else 0
         end_index = steps.index(end_step) + 1 if end_step else len(steps)
 

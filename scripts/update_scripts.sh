@@ -3,7 +3,7 @@
 # explanation: As we run in a container that mounts the project repo read-only,
 # we cannot rely on these scripts being executable. Therefore, they are copied
 # over to ~/scripts where we can take ownership and run them. After a change,
-# these copies have to be refreshed—this is the responsibility of this script.
+# these copies have to be refreshed - that is the script's responsibility.
 #
 # The challenge is that this script (update_scripts.sh) itself is subject to
 # the update, and it might also be called by other scripts. To avoid a script
@@ -13,7 +13,6 @@
 # Define source and target directories
 SOURCE_DIR="/workspace/scripts/"
 TARGET_DIR="${HOME}/scripts"
-
 
 # Generate a random number for the temporary directory
 RANDOM_NUMBER=$(shuf -i 10000-99999 -n 1)
@@ -41,22 +40,10 @@ sudo chown -R $(whoami):$(whoami) "$TEMP_DIR"
 # Make all .sh files in the temporary directory executable and readable for everyone
 find "$TEMP_DIR" -name "*.sh" -exec chmod a+r,u+rx,g+rx {} \;
 
-# Schedule the replacement of the current ~/scripts directory with the temporary one
-# echo "mv -T $TEMP_DIR $TARGET_DIR && rm -rf $TEMP_DIR" | at now + 1 minute
-
-# As the very last operation, refresh the shell's command cache by rehashing
-# echo "hash -r" | at now + 1 minute 1 second
-
 # Define log file
 DELAYED_ACTION_LOGFILE="${HOME}/delayed_action.log"
 
 # Schedule the replacement of the current ~/scripts directory with the temporary one
-# echo "echo 'Starting script at $(date)' >> $DELAYED_ACTION_LOGFILE; \
-# whoami >> $DELAYED_ACTION_LOGFILE; \
-# cp -r /home/developer/.tmp_scripts_$RANDOM_NUMBER/* /home/developer/scripts/ >> $DELAYED_ACTION_LOGFILE 2>&1; \
-# rm -rf /home/developer/.tmp_scripts_$RANDOM_NUMBER >> $DELAYED_ACTION_LOGFILE 2>&1; \
-# echo 'Script completed at $(date)' >> $DELAYED_ACTION_LOGFILE; \
-# echo -e '\a'" | at now + 2 minute
 
 rm -f $DELAYED_ACTION_LOGFILE
 
@@ -75,4 +62,3 @@ atq >> $DELAYED_ACTION_LOGFILE
 
 echo "Scripts copied to $TEMP_DIR, ownership changed, and made executable."
 echo "Replacement scheduled and will be executed within 1 minute from $(date)"
-
