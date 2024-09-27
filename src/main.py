@@ -1,11 +1,12 @@
 import json
 import argparse
-from pipeline.pipeline_manager import PipelineManager
-from steps.preprocess_step import PreprocessStep
+from argparse import Namespace
+from .pipeline.pipeline_manager import PipelineManager
+from .steps.preprocess_step import PreprocessStep
 
 
 def load_document_type_defaults(document_type_file, document_type):
-    with open(document_type_file, 'r') as file:
+    with open(document_type_file, "r") as file:
         document_type_defaults = json.load(file)
     return document_type_defaults.get(document_type, {})
 
@@ -21,36 +22,57 @@ def merge_parameters(json_params, args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Run OCR pipeline')
+    parser = argparse.ArgumentParser(description="Run OCR pipeline")
+
+    # in the production setup or when simply running the code in dev mode
+    # the defaults are used - these values are not intended to be changed
+    # by the user and are not documented - they are externalized for
+    # integration testing
+
     parser.add_argument(
-        '--config',
+        "--data-dir",
         type=str,
-        default='src/configs/pipeline_config.json',
-        help='Path to pipeline config file'
+        default="/data",  # default mount point for both in- and output data
+        help=argparse.SUPPRESS,  # hide from help output
     )
+
     parser.add_argument(
-        '--document_type_defaults',
+        "--config",
         type=str,
-        default='src/configs/document_type_defaults.json',
-        help='Path to document type defaults file'
+        # default pipeline def.
+        default="/workspace/src/configs/pipeline_config.json",
+        help=argparse.SUPPRESS,  # hide from help output
     )
+
     parser.add_argument(
-        '--document_type',
+        "--document_type_defaults",
         type=str,
-        default='book_photos',
-        help='Type of document (e.g., book_photos, ebook_screencaptured)'
+        default="/workspace/src/configs/document_type_defaults.json",
+        help=argparse.SUPPRESS,  # hide from help output
     )
+
+    # user pointing arguments
+
     parser.add_argument(
-        '--start-step',
+        "--document_type",
         type=str,
         default=None,
-        help='Step to start the pipeline from'
+        help="acitivate a document type dependent set of defaults"
+        "(possible values: book_photos, ebook_screencaptured)",
     )
+
     parser.add_argument(
-        '--end-step',
+        "--start-step",
         type=str,
         default=None,
-        help='Step to end the pipeline at'
+        help="Step to start the pipeline from",
+    )
+
+    parser.add_argument(
+        "--end-step",
+        type=str,
+        default=None,
+        help="Step to end the pipeline at",
     )
 
     # PreprocessStep specific arguments (these are overrides)
@@ -60,25 +82,24 @@ def main():
 
     # Load the document type defaults from the new JSON file
     document_type_defaults = load_document_type_defaults(
-            args.document_type_defaults,
-            args.document_type
+        args.document_type_defaults, args.document_type
     )
 
     # Merge JSON parameters with command-line overrides
-    step_parameters = merge_parameters(document_type_defaults, args)
+    step_parameters_dict = merge_parameters(document_type_defaults, args)
+    step_parameters = Namespace(**step_parameters_dict)
 
     try:
         # Initialize the pipeline manager
         pipeline_manager = PipelineManager(
-                config_file=args.config,
-                data_dir='/workspace/data'
+            config_file=args.config, data_dir=args.data_dir
         )
 
         # Run the pipeline (passing merged parameters to the steps)
         pipeline_manager.run_pipeline(
             start_step=args.start_step,
             end_step=args.end_step,
-            step_parameters=step_parameters
+            step_params=step_parameters,
         )
 
     except Exception as e:

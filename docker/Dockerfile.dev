@@ -13,6 +13,8 @@ ENV https_proxy=${https_proxy}
 ENV no_proxy=${no_proxy}
 
 ENV PYTHONPYCACHEPREFIX=/target/__pycache__
+ENV PYTHONPATH="/workspace/src/:/workspace/tests/:$PYTHONPATH"
+ENV PATH="/workspace/scripts:$PATH"
 
 # basic dependencies
 RUN apt-get update \
@@ -20,6 +22,7 @@ RUN apt-get update \
        apt-transport-https \
        ca-certificates \
        sudo \
+       at \ 
        curl \
        wget \
        vim \
@@ -52,9 +55,6 @@ RUN apt-get update \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# create directory and set it as the working directory
-WORKDIR /workspace
-
 # create user developer and groups developer and docker
 RUN groupadd -r -g 1010 developer && groupadd -r docker && \
     useradd -u 999 -r -g developer -G docker -m developer && \
@@ -63,15 +63,39 @@ RUN groupadd -r -g 1010 developer && groupadd -r docker && \
 # Allow the 'developer' user to use sudo without a password
 RUN echo "developer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
+# create the place for the projects
+RUN mkdir -p /workspace
+
 # Ensure the 'developer' user owns the workspace
 RUN chown -R developer:developer /workspace
 
 # Switch to the 'developer' user
 USER developer
 
+# Create the place for the scripts
+RUN mkdir -p /home/developer/scripts
+
+# most developer work will be done from this dir
+WORKDIR /home/developer/scripts
+
+# Add ~/scripts to the PATH
+ENV PATH="/home/developer/scripts:${PATH}"
+
+# Copy scripts to the scripts directory
+COPY scripts/post_create.sh \
+     scripts/update_scripts.sh \
+     scripts/setup_python_virt_env.sh \
+     scripts/run_entrypoint.sh \
+     /home/developer/scripts/
+
+# take ownership and set executable
+RUN  sudo chown -R developer:developer /home/developer/scripts && \
+     chmod -R a+r,u+rx,g+rx /home/developer/scripts/*.sh
+
 # run post_create and pass aditional commands, also run possible additional arguments
 ENTRYPOINT [ "/bin/sh", "-c", "\
+service atd start && \
 echo \"entrypoint is running post_create.sh\" && \
-sh /workspace/scripts/post_create.sh && \
+sh /home/developer/scripts/post_create.sh && \
 exec \"$@\"", "--"]
 

@@ -57,6 +57,17 @@ The main feature of container technology is to abstract away the host environmen
   ** the paths inside the container are known
   ** all tools are present, their location and version is asured
 
+=== layers
+
+===== at hints
+
+* view pending at jobs: `atq`
+* view details of a specific job: `at -c <job_id>`
+* remove a pending job: `atrm <job_id>`
+* look at error logs - various approaches depending on system
+  ** `grep -i "at" /var/log/syslog`
+  ** `journalctl -u atd11`
+
 === volume mounts
 
 the 
@@ -72,3 +83,4 @@ The 2 alternatives would have been to put it inside
 * normal mount point
 
 The first option would imply that the `requirement.txt` and `requirement-dev.txt` files are copied to the container. This would contradict the idea t
+

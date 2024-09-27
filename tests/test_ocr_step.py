@@ -4,7 +4,8 @@ from src.steps.ocr_step import OCRStep
 
 @pytest.fixture
 def ocr_step():
-    return OCRStep()
+    parameters = {}
+    return OCRStep(parameters)
 
 
 # verify that an OCRStep can run sucessfully

@@ -9,10 +9,17 @@ from argparse import Namespace
 @pytest.fixture
 def preprocess_step():
     # Create mock args, replicating the structure of command-line arguments
-    mock_args = Namespace(grayscale=True, remove_noise=True, threshold=False,
-                          adaptive_threshold=False, block_size=3,
-                          noise_constant=5, dilate=False, erode=False,
-                          invert=False)
+    mock_args = Namespace(
+        grayscale=True,
+        remove_noise=True,
+        threshold=False,
+        adaptive_threshold=False,
+        block_size=3,
+        noise_constant=5,
+        dilate=False,
+        erode=False,
+        invert=False,
+    )
     return PreprocessStep(mock_args)
 
 
@@ -29,11 +36,11 @@ def test_preprocess_step_run(preprocess_step, tmpdir):
     result = preprocess_step.run(str(input_dir))
 
     # Verify that the 'preprocessed' directory was created
-    preprocessed_dir = os.path.join(str(input_dir), 'preprocessed')
+    preprocessed_dir = os.path.join(str(input_dir), "preprocessed")
     assert os.path.exists(preprocessed_dir)
 
     # Verify that the metadata file was created
-    metadata_file = os.path.join(preprocessed_dir, 'metadata.json')
+    metadata_file = os.path.join(preprocessed_dir, "metadata.json")
     assert os.path.exists(metadata_file)
 
     # Verify that the process completed successfully
