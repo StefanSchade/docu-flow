@@ -5,3 +5,5 @@ mypy
 types-tqdm
 black
 flake8
+monkeytype
+pytest-monkeytype

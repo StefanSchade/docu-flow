@@ -9,19 +9,41 @@ else
     exit 1
 fi
 
+# Include src and tests directories in PYTHONPATH
+export PYTHONPATH=$PYTHONPATH:/workspace/src:/workspace/tests
 
-# Tell python to include the src dir into the path
-export PYTHONPATH=$PYTHONPATH:/workspace/src
-
-# Set the coverage file path to a directory within /workspace/target
+# Set the coverage file path
 export COVERAGE_FILE=/target/.coverage
 
 # Verify the PYTHONPATH
 echo "PYTHONPATH: $PYTHONPATH"
 
-# Run a quick check to ensure Python sees the src directory
+# Check Python's sys.path
 python -c "import sys; print(sys.path)"
 
-# Run pytest to discover and run all tests in that dir
-pytest --maxfail=1 --disable-warnings --cov=/workspace/src --cov-report=term --cov-report=html:/target/coverage_html /workspace/tests/ 
+# Set the path for the MonkeyType SQLite database
+export MT_DB_PATH=/target/monkeytype.sqlite3
+
+# Check if MonkeyType is enabled
+if [ "$MONKEYTYPE_ENABLED" = "1" ]; then
+   echo "MonkeyType is enabled. Collecting type data..."
+   pytest --monkeytype-output=/target/monkeytype.sqlite3 --verbose --maxfail=1 --disable-warnings --cov=/workspace/src --cov-report=term --cov-report=html:/target/coverage_html /workspace/tests/
+   
+# https://pypi.org/project/pytest-monkeytype/
+#    monkeytype run pytest --verbose --maxfail=2 --disable-warnings --cov=/workspace/src --cov-report=term --cov-report=html:/target/coverage_html /workspace/tests/
+#     python -c "print(\"hello world\")"
+#     monkeytype run "print(\"hello world\")"
+#    monkeytype run \
+#         "      import subprocess;    \
+#                subprocess.run(['pytest', '--verbose', '--maxfail=1', '--disable-warnings', \
+#                '--cov=/workspace/src', '--cov-report=term', '--cov-report=html:/target/coverage_html', \
+#                '/workspace/tests/'])
+#         "
+   echo "Type data collection completed."
+else
+   echo "MonkeyType is disabled. Running tests without type data collection."
+   # Run pytest normally
+   pytest --verbose --maxfail=1 --disable-warnings --cov=/workspace/src --cov-report=term --cov-report=html:/target/coverage_html /workspace/tests/
+   echo "Tests completed without type data collection."
+fi
 
